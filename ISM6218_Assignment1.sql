@@ -173,7 +173,7 @@ HAVING COUNT(beer_name) > (
     GROUP BY brewery_id)
 ORDER BY 
     COUNT(beer_name) DESC,
-    name ASC; -- sort by name not working think this is a rounding issue
+    name ASC;
 
 /*13.	For each movie display its movie title, year, and how many cast 
 members were a part of the movie. Exclude movies with five or fewer cast 
