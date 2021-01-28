@@ -251,26 +251,22 @@ representing the top 25% of breweries (in terms of number of beers),
 group 2 representing the next 25% of breweries, group 3 the next 25%, and 
 group 4 for the last 25%.  Breweries with the most beers should be shown first.  
 In the case of a tie, show breweries by brewery ID (lowest to highest).*/
-
-WITH beer_by_brewery AS(
-    SELECT
-        br.brewery_id,
-        --name,can't get Bewery name to appear
-        COUNT(beer_name) AS num_beers_brewed
-    FROM
-        beerdb.beers be
-        INNER JOIN beerdb.breweries br ON be.brewery_id = br.brewery_id 
-        WHERE br.brewery_id IS NOT NULL
-GROUP BY br.brewery_id
-)
-SELECT 
-    brewery_id,
-    --name,can't get Bewery name to appear
-    num_beers_brewed, 
-    NTILE(4) OVER (
-        ORDER BY num_beers_brewed DESC) AS group_number 
-FROM
-    beer_by_brewery;
+  
+SELECT   
+    br.brewery_id, 
+    br.name,  
+    COUNT(DISTINCT(be.beer_id)) as "beer_count",  
+    NTILE(4) OVER( 
+        ORDER BY COUNT(DISTINCT(be.beer_id)) DESC) group_number  
+FROM 
+    breweries br  
+        JOIN beers be ON br.brewery_id = be.brewery_id  
+GROUP BY
+    br.brewery_id, 
+    br.name 
+ORDER BY 
+    COUNT(DISTINCT(be.beer_id)) DESC, 
+    brewery_id ASC;
     
 -- Wadnerson script
 SELECT 
