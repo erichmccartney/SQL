@@ -285,16 +285,17 @@ number, beer name, and ABV for all beers ranked 1-10. Do not leave any gaps
 in the ranking sequence when there are ties (e.g., 1, 2, 2, 2, 3, 4, 4, 5). 
 (Hint: derived tables may help with this query.)*/
  
-SELECT
-    beer_name, 
-    abv,
-    DENSE_RANK() OVER(ORDER BY abv DESC) AS rank -- RANK() OVER(ORDER BY abv DESC) would create a skip in rank
-FROM
-    beers
+SELECT *
+FROM(SELECT
+        beer_name, 
+        abv,
+        DENSE_RANK() OVER(ORDER BY abv DESC) AS rank -- RANK() OVER(ORDER BY abv DESC) would create a skip in rank
+    FROM
+        beers)
 WHERE 
-    abv > 0;
-    -- rank<= 10; having trouble limiting output to only rank 1-10  
-
+    abv > 0 AND
+    rank <= 10;
+    
 /*21.   Display the film title, film year and worldwide gross for all movies 
 directed by Christopher Nolan that have a worldwide gross greater than zero.  
 In addition, each row should contain the cumulative worldwide gross (current 
