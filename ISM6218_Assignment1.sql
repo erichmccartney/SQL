@@ -284,7 +284,6 @@ content.  Only consider beers with an ABV greater than zero. Display the rank
 number, beer name, and ABV for all beers ranked 1-10. Do not leave any gaps 
 in the ranking sequence when there are ties (e.g., 1, 2, 2, 2, 3, 4, 4, 5). 
 (Hint: derived tables may help with this query.)*/
- 
 SELECT *
 FROM(SELECT
         beer_name, 
