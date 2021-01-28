@@ -1,2 +1,2 @@
-# SQL Developer
- SQL Scripts from SGL Developer
+# SQL
+ SQL Scripts from a variety of DBMS
