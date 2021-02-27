@@ -1,0 +1,50 @@
+-- The random number (or string) generator is very
+-- useful for synthesizing data, alone or as part
+-- of a more complicated query or stored procedure.
+-- The DBMS_RANDOM package includes a variety of
+-- methods and parameter settings that are worth exploring.
+-- Have a look at the examples below and the Oracle
+-- docmentation as need.
+-- dberndt@usf.edu
+
+
+-- Genertating Random Strings
+
+-- Upper case string, lenght 6.
+SELECT DBMS_RANDOM.STRING('U', 6) FROM dual;
+
+-- Upper case alphanumeric string, lenght 10.
+SELECT DBMS_RANDOM.STRING('X', 10) FROM dual;
+
+
+-- Generating Random Numbers
+
+-- Basic random value between 0 and 1.
+SELECT DBMS_RANDOM.VALUE() FROM dual;
+
+-- Basic random value in a specified range,
+-- which can be rounded (ROUND) or truncated (TRUNC) as needed.
+SELECT DBMS_RANDOM.VALUE(1, 100) FROM dual;
+
+-- Note: Use DBMS_RANDOM.SEED() to reset the seed.
+
+
+-- So, if we wanted to generate DMV tags or license plates
+-- based on some realistic form, we can use DBMS_RANDOM.
+-- Here we assume there are two groups of three characters,
+-- the first uppercase alphabetic characters, the second
+-- upper case alphanumeric characters.
+
+-- Again, we add the column to the FANS table.
+
+ALTER TABLE fans ADD dmv_tag VARCHAR2(10);
+
+UPDATE fans SET dmv_tag =
+  DBMS_RANDOM.STRING('U', 3) || DBMS_RANDOM.STRING('X', 3);
+
+-- Of course, to guarantee a truly unique value would require
+-- a bit more work.
+
+
+
+
