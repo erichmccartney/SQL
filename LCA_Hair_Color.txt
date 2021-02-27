@@ -1,0 +1,55 @@
+-- This simple script file is just a bit
+-- of code to get you started on synthesizing data
+-- for indexing experiments and other topics.
+-- Add a "hair color" column to the fans table
+-- (or some other test table), providing a reasonable
+-- low cardinality attribute for use in queries.
+-- Of course, you can use similar approaches for any
+-- other attributes you might find useful.
+-- dberndt@usf.edu
+
+
+-- First, add a column to the table.
+
+ALTER TABLE fans ADD hair_color VARCHAR2(3);
+
+
+-- This updates the hair color column, with an
+-- even distribution.
+
+UPDATE fans SET hair_color = DECODE(MOD(rownum, 8),
+  0, 'BLK',
+  1, 'BRN',
+  2, 'BLE',
+  3, 'AUB',
+  4, 'CHT',
+  5, 'RED',
+  6, 'GRW',
+  'UNK');
+
+
+-- This is a supporting table that can be used
+-- for a foreign key relationship.
+
+CREATE TABLE hair_colors (
+  hc_code VARCHAR2(3),
+  hc_name VARCHAR2(15),
+  CONSTRAINT hair_colors_pk PRIMARY KEY (hc_code));
+
+INSERT INTO hair_colors (hc_code, hc_name) VALUES ('BLK', 'Black');
+INSERT INTO hair_colors (hc_code, hc_name) VALUES ('BRN', 'Brown');
+INSERT INTO hair_colors (hc_code, hc_name) VALUES ('BLE', 'Blonde');
+INSERT INTO hair_colors (hc_code, hc_name) VALUES ('AUB', 'Auburn');
+INSERT INTO hair_colors (hc_code, hc_name) VALUES ('CHT', 'Chestnut');
+INSERT INTO hair_colors (hc_code, hc_name) VALUES ('RED', 'Red');
+INSERT INTO hair_colors (hc_code, hc_name) VALUES ('GRW', 'Gray and White');
+INSERT INTO hair_colors (hc_code, hc_name) VALUES ('UNK', 'Unknown');
+
+COMMIT;
+
+
+-- Now you can add a foreign key constraint to the table.
+
+ALTER TABLE fans
+  ADD CONSTRAINT fans_hair_color_fk
+  FOREIGN KEY (hair_color) REFERENCES hair_colors (hc_code);

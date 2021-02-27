@@ -1,0 +1,77 @@
+-- This simple script file is just a bit
+-- of code to get you started on synthesizing data
+-- for indexing experiments and other topics.
+-- Add a "hat size" column to the fans table
+-- (or some other test table), providing a reasonable
+-- low cardinality attribute for use in queries.
+-- Of course, you can use similar approaches for any
+-- other attributes you might find useful.
+-- dberndt@usf.edu
+
+
+-- First, add a column to the table.
+
+ALTER TABLE fans ADD hat_size VARCHAR2(5);
+
+
+-- This updates the hat size column, making some
+-- sizes more common by repeating the values.
+-- Not really sure about the worldwide distribution
+-- of hat sizes ;-).
+
+UPDATE fans SET hat_size = DECODE(MOD(rownum, 10),
+  0, 'S',
+  1, 'S',
+  2, 'M',
+  3, 'M',
+  4, 'M',
+  5, 'L',
+  6, 'L',
+  7, 'XL',
+  8, 'XL',
+  'XXL');
+
+
+-- Use MOD again to add some rare values.
+-- These types of updates can be used to add
+-- variation to the column distribution.
+ 
+UPDATE fans SET hat_size = 'XXXL'
+WHERE MOD(fan_id, 100) = 0;
+
+
+-- Check the data distribution
+-- with a simple GROUP BY query.
+
+SELECT
+  hat_size,
+  COUNT(*) AS observations
+FROM fans
+GROUP BY hat_size
+ORDER BY COUNT(*) DESC;
+
+
+-- This is a supporting table that can be used
+-- for a foreign key relationship.
+
+CREATE TABLE hat_sizes (
+  hs_code VARCHAR2(5),
+  hs_name VARCHAR2(15),
+  CONSTRAINT hat_sizes_pk PRIMARY KEY (hs_code));
+
+INSERT INTO hat_sizes (hs_code, hs_name) VALUES ('S', 'Small');
+INSERT INTO hat_sizes (hs_code, hs_name) VALUES ('M', 'Medium');
+INSERT INTO hat_sizes (hs_code, hs_name) VALUES ('L', 'Large');
+INSERT INTO hat_sizes (hs_code, hs_name) VALUES ('XL', 'X Large');
+INSERT INTO hat_sizes (hs_code, hs_name) VALUES ('XXL', 'XX Large');
+INSERT INTO hat_sizes (hs_code, hs_name) VALUES ('XXXL', 'XXX Large');
+INSERT INTO hat_sizes (hs_code, hs_name) VALUES ('UNK', 'Unknown');
+
+COMMIT;
+
+
+-- Now you can add a foreign key constraint to the table.
+
+ALTER TABLE fans
+  ADD CONSTRAINT fans_hat_size_fk
+  FOREIGN KEY (hat_size) REFERENCES hat_sizes (hs_code);

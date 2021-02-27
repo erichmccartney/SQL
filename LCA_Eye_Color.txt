@@ -1,0 +1,76 @@
+-- This simple script file is just a bit
+-- of code to get you started on synthesizing data
+-- for indexing experiments and other topics.
+-- Add an "eye color" column to the fans table
+-- (or some other test table), providing a reasonable
+-- low cardinality attribute for use in queries.
+-- Of course, you can use similar approaches for any
+-- other attributes you might find useful.
+-- dberndt@usf.edu
+
+
+-- First, add a column to the table.
+
+ALTER TABLE fans ADD eye_color VARCHAR2(3);
+
+
+-- This updates the eye color column, making some
+-- sizes more common by repeating the values.
+-- This distribution loosely based on the worldwide
+-- human eye color percentages.
+
+UPDATE fans SET eye_color = DECODE(MOD(rownum, 16),
+  0, 'AMB',
+  1, 'BLU',
+  2, 'BLU',
+  3, 'BLU',
+  4, 'BRN',
+  5, 'BRN',
+  6, 'BRN',
+  7, 'BRN',
+  8, 'BRN',
+  9, 'BRN',
+  10, 'GRY',
+  11, 'GRN',
+  12, 'HZL',
+  13, 'HZL',
+  14, 'RAV',
+  'UNK');
+
+
+-- Check the data distribution
+-- with a simple GROUP BY query.
+
+SELECT
+  eye_color,
+  COUNT(*) AS observations
+FROM fans
+GROUP BY eye_color
+ORDER BY COUNT(*) DESC;
+
+
+-- This is a supporting table that can be used
+-- for a foreign key relationship.
+  
+CREATE TABLE eye_colors (
+  ec_code VARCHAR2(3),
+  ec_name VARCHAR2(15),
+  CONSTRAINT eye_colors_pk PRIMARY KEY (ec_code));
+ 
+INSERT INTO eye_colors (ec_code, ec_name) VALUES ('AMB', 'Amber');
+INSERT INTO eye_colors (ec_code, ec_name) VALUES ('BLU', 'Blue');
+INSERT INTO eye_colors (ec_code, ec_name) VALUES ('BRN', 'Brown');
+INSERT INTO eye_colors (ec_code, ec_name) VALUES ('GRY', 'Gray');
+INSERT INTO eye_colors (ec_code, ec_name) VALUES ('GRN', 'Green');
+INSERT INTO eye_colors (ec_code, ec_name) VALUES ('HZL', 'Hazel');
+INSERT INTO eye_colors (ec_code, ec_name) VALUES ('RAV', 'Red and Violet');
+INSERT INTO eye_colors (ec_code, ec_name) VALUES ('UNK', 'Unknown');
+
+COMMIT;
+
+
+-- Now you can add a foreign key constraint to the table.
+
+ALTER TABLE fans
+  ADD CONSTRAINT fans_eye_color_fk
+  FOREIGN KEY (eye_color) REFERENCES eye_colors (ec_code);

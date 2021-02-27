@@ -1,0 +1,21 @@
+-- As we have see, the random number generator is
+-- useful for synthesizing data, alone or as part
+-- of a more complicated query or stored procedure.
+-- This script generates test Social Security Administration
+-- (SSA) numbers using DBMS_RANDOM to be stored as a string.
+-- dberndt@usf.edu
+
+
+-- Again, using the FANS table as an example,
+-- we add a column for SSN (as a text field).
+
+ALTER TABLE fans ADD ssn_12 VARCHAR2(12);
+
+UPDATE fans SET ssn_12 =
+  TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(100, 999))) || '-' ||
+  TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(10, 99))) || '-' ||
+  TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1000, 9999)));
+
+-- This makes fairly realistic looking SSNs.
+-- Of course, more research on how the SSA creates numbers
+-- could be used to build a better generator.
